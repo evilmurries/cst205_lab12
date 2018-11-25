@@ -9,7 +9,7 @@ class Room:
         west=None, east=None):
         self.name = name
         self.desc = desc
-        self.beenVisited = False
+        self.items = []
 
         # set exits
         self.north = north
@@ -24,6 +24,22 @@ class Room:
     # This method returns the description of the room
     def getDesc(self):
         return self.desc
+    
+    # This method adds items to the room
+    def printItems(self):
+      for item in self.items:
+        printNow('You see a %s' % item.getName())
+        
+    def getItems(self):
+      return self.items
+
+    # This method removes an item from the room
+    def removeItem(self, item):
+        self.items.remove(item)
+      
+    # This method adds an item to the room
+    def addItem(self, item):
+      self.items.append(item)
       
     def printExits(self):
       return_string = ''
@@ -78,14 +94,45 @@ class Room:
     def setWest(self, room):
         self.west = room
         
+# One object of Class Items represents an item in the game
+class Items:
+  
+  #constructor
+  def __init__(self, name='', desc='', loc=''):
+    self.name = name
+    self.desc = desc
+    self.loc = loc
     
+  # This method returns the name of the item
+  def getName(self):
+    return self.name
+  
+  # This method returns the description of the item
+  def getDesc(self):
+    return self.desc
+  
+  #This meth returns the location of the item
+  def getLoc(self):
+    return self.loc
     
+  #This sets the name for this item
+  def setName(self, name):
+    self.name = name
+    
+  #This sets the description for this item
+  def setDesc(self, desc):
+    self.desc = desc
+    
+  #This sets the location for this item
+  def setLoc(self):
+    self.loc = loc
 
+  
 # Class Player represents the player character
 class Player:
 
     # Constructor method for Class Player
-    def __init__(self, inventory=''):
+    def __init__(self, inventory=[]):
         self.inventory = inventory
         self.location = None
 
@@ -100,13 +147,21 @@ class Player:
     # This method returns the room that the player is currently in
     def getLocation(self):
         return self.location
+      
+    def addInventory(self, itemToAdd):
+      self.inventory.append(itemToAdd)
 
+    def printInventory(self):
+        printNow('This is your inventory')
+        for item in self.inventory: 
+          printNow(item.getName())
+          
 # Main function for the game
 def Main():
 
     # Create Map 
     descCell = 'A cold, lonely prison cell, your home for the last 15 years for a crime you did not do!'
-    descHall = 'The hallway of a prison. All your prisonmates are sound asleep. If you are loud, they will wake up and your cover will be blown. the'
+    descHall = 'The hallway of a prison. All your prisonmates are sound asleep. If you are loud, they will wake up and your cover will be blown.'
     descKitchen = 'The kitchen for the prison. Where the food is disgusting.'
     descCloset = 'Closet in the Kitchen. It smells like somethind died in here. You are in the wrong location!'
     twoHall = 'Another hallway, the prison cat is sound asleep.'
@@ -146,13 +201,27 @@ def Main():
     room7.setNorth(room8)
     room7.setEast(room9)
     
+    # Item Descriptions
+    keyDescription = 'Use this key to get out of the prison gate.'
+    catDescription = 'Pet the cat to make sure the cat does not wake up.'
+    locpickDescription ='Use this picklock to unlock a secret '
+    
+    # Create Items
+    key = Items('key',keyDescription,room4)
+    cat = Items('cat',catDescription,room5)
+    lockpick = Items('lockpick', locpickDescription, room6)
+    
+    # Add items
+    room4.addItem(key)
+    room5.addItem(cat)
+    room6.addItem(lockpick)
 
     # Create Player
     player1 = Player()
     player1.setLocation(room1)
 
     # Define Extra Variables
-    commands = ['examine', 'n', 's', 'e', 'w', 'get', 'exit', 'help']
+    commands = ['examine', 'n', 's', 'e', 'w', 'get', 'use', 'exit', 'help', 'print']
     directions = ['n', 's', 'e', 'w']
     gameWon = False
     welcomeMessage = 'Welcome to Jailbreak\n You are a prisoner who is looking to escape from one of the most dangerous prisons in the world.\n 
@@ -167,6 +236,7 @@ def Main():
         printNow(player1.getLocation().getName())
         printNow(player1.getLocation().getDesc())
         printNow(player1.getLocation().printExits())
+        player1.getLocation().printItems()
         
         # input loop. Keep asking for input until a valid command is received
         inputValidation = False
@@ -185,10 +255,32 @@ def Main():
         # handle a request for help
         if input == 'help':
             printNow(helpMessage) 
-          
+
+        # handle request to print inventory
+        if input == 'print':
+            player1.printInventory()
+        
         # handle an examine request
         if input == 'examine':
-            printNow(player1.getLocation().getDesc())
+          whatToExamine = requestString('What would you like to examine? room or items?')
+          if whatToExamine == 'room':
+            printNow(player1.getLocation.getDesc())
+          elif whatToExamine == 'items':
+            for item in player1.getInventory():
+              printNow('%d. %s' % (item, item.getName()))
+            itemToExamine = requestString('Which item to examine?')
+            printNow(itemToExamine.getDesc())
+            
+        if input == 'get':
+          getWhat = requestString('Get what?')
+          roomItems = player1.getLocation().getItems()
+          for item in roomItems:
+            if item.getName() == getWhat:
+                foundItem = item
+                player1.addInventory(item)
+                player1.getLocation().removeItem(item)
+                printNow('Took item')
+        
         
         # handle movement requests
         if input in directions:
@@ -197,7 +289,6 @@ def Main():
             player1.setLocation(player1.getLocation().getExit(input))
           else:
             printNow('There is no exit in that direction')
-        
         
         #######If there is a better way of doing this let me know ######
         # game over conditions
@@ -212,8 +303,5 @@ def Main():
           
 
           
-  
-  
-  
-  
-  
+
+
