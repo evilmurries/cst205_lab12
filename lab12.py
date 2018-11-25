@@ -171,6 +171,7 @@ def Main():
     
     guardRoom = 'You enter and see about three guards. What should you do now?'
     endDescription = 'This is the exit. You\'re happy to make it out Alive!'
+    escapeRoom = 'You found the secret exit to freedom!'
     
     room1 = Room('Your cell', descCell)
     room2 = Room('Hall', descHall)
@@ -181,6 +182,7 @@ def Main():
     room7 = Room('3rd Hall', threeHall)
     room8 = Room('Guard Room', guardRoom )
     room9 = Room('Exit', endDescription)
+    room10 = Room('Secret Room', escapeRoom)
     
     
     # Connect Rooms
@@ -189,6 +191,8 @@ def Main():
     room2.setEast(room3)
     room3.setWest(room2)
     room3.setNorth(room4)
+    room4.setNorth(room10)
+    room10.setSouth(room4)
     room4.setSouth(room3)
     
     room3.setEast(room5)
@@ -256,7 +260,6 @@ def Main():
         if input == 'help':
             printNow(helpMessage) 
 
-        # handle request to print inventory
         if input == 'print':
             player1.printInventory()
         
@@ -264,12 +267,12 @@ def Main():
         if input == 'examine':
           whatToExamine = requestString('What would you like to examine? room or items?')
           if whatToExamine == 'room':
-            printNow(player1.getLocation.getDesc())
+            printNow(player1.getLocation().getDesc())
           elif whatToExamine == 'items':
             for item in player1.getInventory():
-              printNow('%d. %s' % (item, item.getName()))
-            itemToExamine = requestString('Which item to examine?')
-            printNow(itemToExamine.getDesc())
+              printNow(item.getName())
+              printNow(item.getDesc())
+              print('\n')
             
         if input == 'get':
           getWhat = requestString('Get what?')
@@ -303,5 +306,6 @@ def Main():
           
 
           
+
 
 
