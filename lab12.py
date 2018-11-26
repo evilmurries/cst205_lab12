@@ -6,10 +6,11 @@ class Room:
 
     # Constructor method for class Room
     def __init__(self, name='', desc='', north=None, south=None, \
-        west=None, east=None):
+        west=None, east=None, lock='', item=''):
         self.name = name
         self.desc = desc
-        self.items = []
+        self.item = item
+        self.lock = lock
 
         # set exits
         self.north = north
@@ -24,22 +25,27 @@ class Room:
     # This method returns the description of the room
     def getDesc(self):
         return self.desc
+
+    def setLock(self, lock):
+        self.lock = lock
+
+    def getLock(self):
+        return self.lock
     
     # This method adds items to the room
     def printItems(self):
-      for item in self.items:
-        printNow('You see a %s' % item.getName())
+      printNow('You see a ' + self.item + '\n')
         
-    def getItems(self):
-      return self.items
+    # This method returns the items contained in the room
+    def getItem(self):
+      return self.item
+      
+    def setItem(self, item):
+        self.item = item
 
     # This method removes an item from the room
     def removeItem(self, item):
-        self.items.remove(item)
-      
-    # This method adds an item to the room
-    def addItem(self, item):
-      self.items.append(item)
+        self.item = ''
       
     def printExits(self):
       return_string = ''
@@ -65,6 +71,10 @@ class Room:
             return self.west
         else:
             return None
+
+    # Hides a secret exit!!!
+    def printExitsSecret(self):
+      return 'There is an exit to the south.\n'
 
     # String method for class Room
     def __string__(self):
@@ -93,46 +103,13 @@ class Room:
     # This method sets the west exit for the room
     def setWest(self, room):
         self.west = room
-        
-# One object of Class Items represents an item in the game
-class Items:
-  
-  #constructor
-  def __init__(self, name='', desc='', loc=''):
-    self.name = name
-    self.desc = desc
-    self.loc = loc
-    
-  # This method returns the name of the item
-  def getName(self):
-    return self.name
-  
-  # This method returns the description of the item
-  def getDesc(self):
-    return self.desc
-  
-  #This meth returns the location of the item
-  def getLoc(self):
-    return self.loc
-    
-  #This sets the name for this item
-  def setName(self, name):
-    self.name = name
-    
-  #This sets the description for this item
-  def setDesc(self, desc):
-    self.desc = desc
-    
-  #This sets the location for this item
-  def setLoc(self):
-    self.loc = loc
 
-  
+
 # Class Player represents the player character
 class Player:
 
     # Constructor method for Class Player
-    def __init__(self, inventory=[]):
+    def __init__(self, inventory=''):
         self.inventory = inventory
         self.location = None
 
@@ -144,18 +121,23 @@ class Player:
     def setLocation(self, location):
         self.location = location
 
+    def setInventory(self, inventory):
+        self.inventory = inventory
+
     # This method returns the room that the player is currently in
     def getLocation(self):
         return self.location
       
     def addInventory(self, itemToAdd):
-      self.inventory.append(itemToAdd)
+      self.inventory += itemToAdd + ' '
 
     def printInventory(self):
-        printNow('This is your inventory')
-        for item in self.inventory: 
-          printNow(item.getName())
+        if self.inventory != '':
+            printNow('You have ' + self.inventory)
+        else:
+            printNow('You do not have anything.')
           
+
 # Main function for the game
 def Main():
 
@@ -170,7 +152,7 @@ def Main():
     twoCell = 'Entering another Cell. Your old prisonmate who assaulted you is reading a book. He waves as you walk through the cell.'
     
     guardRoom = 'You enter and see about three guards. What should you do now?'
-    endDescription = 'This is the exit. You\'re happy to make it out Alive!'
+    endDescription = 'This is the gate room. It seems to be your best shot out of here.'
     escapeRoom = 'You found the secret exit to freedom!'
     
     room1 = Room('Your cell', descCell)
@@ -204,21 +186,22 @@ def Main():
     
     room7.setNorth(room8)
     room7.setEast(room9)
+
+    room9.setWest(room7)
     
     # Item Descriptions
     keyDescription = 'Use this key to get out of the prison gate.'
     catDescription = 'Pet the cat to make sure the cat does not wake up.'
-    locpickDescription ='Use this picklock to unlock a secret '
-    
-    # Create Items
-    key = Items('key',keyDescription,room4)
-    cat = Items('cat',catDescription,room5)
-    lockpick = Items('lockpick', locpickDescription, room6)
+    lockpickDescription ='Use this picklock to unlock a secret '
     
     # Add items
-    room4.addItem(key)
-    room5.addItem(cat)
-    room6.addItem(lockpick)
+    room4.setItem('key')
+    room5.setItem('cat')
+    room6.setItem('lockpick')
+
+    # Lock doors
+    room9.setLock('key')
+    room10.setLock('lockpick')
 
     # Create Player
     player1 = Player()
@@ -228,8 +211,8 @@ def Main():
     commands = ['examine', 'n', 's', 'e', 'w', 'get', 'use', 'exit', 'help', 'print']
     directions = ['n', 's', 'e', 'w']
     gameWon = False
-    welcomeMessage = 'Welcome to Jailbreak\n You are a prisoner who is looking to escape from one of the most dangerous prisons in the world.\n 
-    helpMessage = 'Type exit to quit your game.\n''To move your player type n,s,e,and w.\n''Type get to pick up objects\n''Type in examine to look at your surroundings.\n' 
+    welcomeMessage = 'Welcome to Jailbreak\nYou are a prisoner who is looking to escape from one of the most dangerous prisons in the world.\n' 
+    helpMessage = 'Type exit to quit your game.\nTo move your player type n,s,e,and w.\nType get to pick up objects\nType in examine to look at your surroundings.\n' 
     
     # print welcome message
     printNow(welcomeMessage)
@@ -239,8 +222,14 @@ def Main():
     while gameWon != True:
         printNow(player1.getLocation().getName())
         printNow(player1.getLocation().getDesc())
-        printNow(player1.getLocation().printExits())
-        player1.getLocation().printItems()
+
+        if player1.getLocation().getName() == 'Closet':
+            printNow(player1.getLocation().printExitsSecret())
+        else:
+            printNow(player1.getLocation().printExits())
+        
+        if player1.getLocation().getItem() != '':
+            player1.getLocation().printItems()
         
         # input loop. Keep asking for input until a valid command is received
         inputValidation = False
@@ -276,14 +265,11 @@ def Main():
             
         if input == 'get':
           getWhat = requestString('Get what?')
-          roomItems = player1.getLocation().getItems()
-          for item in roomItems:
-            if item.getName() == getWhat:
-                foundItem = item
-                player1.addInventory(item)
-                player1.getLocation().removeItem(item)
-                printNow('Took item')
-        
+          roomItem = player1.getLocation().getItem()
+          if roomItem == getWhat:
+            player1.addInventory(roomItem)
+            player1.getLocation().removeItem(roomItem)
+            printNow('Took item: ' + roomItem)
         
         # handle movement requests
         if input in directions:
@@ -294,13 +280,15 @@ def Main():
             printNow('There is no exit in that direction')
         
         #######If there is a better way of doing this let me know ######
-        # game over conditions
-        if player1.getLocation() == room9:
-          gameWon = True
-          print 'Congratulations, you escaped!'
+        # game over | win conditions
+        if player1.getLocation() == room9 and 'key' in player1.getInventory():
+            gameWon = True
+            print 'You unlock the gate with the key. Congratulations, you escaped!'
+        elif player1.getLocation() == room9:
+            printNow('You\'ve made it to the exit, but the gate is locked!')
         
        ##want to check if player is in guard room and tries to leave he will be caught and game ends.
-        if player1.getLocation() == room8 and input:
+        if player1.getLocation() == room8:
           gameWon = True
           print 'You entered the Guard\'s Room. You got caught!!!'
           
