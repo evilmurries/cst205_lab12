@@ -156,7 +156,7 @@ def Main():
 
     descKitchen = 'The kitchen for the prison. The food looks disgusting.'
 
-    descCloset = 'Closet of the Kitchen. It smells like somethind died in here.\
+    descCloset = 'Closet of the Kitchen. It smells like something died in here.\
  There is a weird mark on the back wall'
 
     twoHall = 'Another hallway, the prison cat is sound asleep.'
