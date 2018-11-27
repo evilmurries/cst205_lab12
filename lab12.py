@@ -303,7 +303,7 @@ def Main():
 
         # secret room
         if player1.getLocation() == room10 and 'lockpick' in player1.getInventory():
-            printNow(player1.getLocation.getName())
+            printNow(player1.getLocation().getName())
             printNow(player1.getLocation().getDesc())
             printNow('You use the lockpick on the strange keyhole.')
             printNow('You found a secret exit. You win!!!')
