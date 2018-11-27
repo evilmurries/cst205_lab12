@@ -159,7 +159,7 @@ def Main():
     descCloset = 'Closet of the Kitchen. It smells like something died in here.\
  There is a weird mark on the back wall'
 
-    twoHall = 'Another hallway, the prison cat is sound asleep.'
+    twoHall = 'Another hallway, empty cells line the left side.'
 
     threeHall = 'Entering a third hallway. This place seemingly goes on\
  forever.'
@@ -171,7 +171,7 @@ def Main():
     endDescription = 'This is the gate room. It seems to be your best shot out\
  of here.'
 
-    escapeRoom = 'You found a secret room! There is a strange keyhole on the \
+    escapeRoom = 'You found a secret room! There is a strange keyhole on the\
  wall. If you had a pick you could probably turn it.'
     
     # Make Rooms
@@ -216,8 +216,7 @@ def Main():
     player1.setLocation(room1)
 
     # Define Extra Variables
-    commands = ['examine', 'n', 's', 'e', 'w', 'get', 'use', 'exit', 'help',\
-     'print']
+    commands = ['examine', 'n', 's', 'e', 'w', 'get', 'exit', 'help']
     directions = ['n', 's', 'e', 'w']
     gameWon = False
 
@@ -298,7 +297,7 @@ def Main():
         if player1.getLocation() == room9 and 'key' in player1.getInventory():
             gameWon = True
             printNow('You unlock the gate with the key. Congratulations, you\
-             escaped!')
+ escaped!')
         elif player1.getLocation() == room9:
             printNow('You\'ve made it to the exit, but the gate is locked!')
 
